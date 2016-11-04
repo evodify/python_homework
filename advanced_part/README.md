@@ -11,7 +11,7 @@ Such images (the example is taken from [Kryvokhyzha, 2014] (http://urn.kb.se/res
 
 However, often researchers are interested in the quantitative evaluation of different phylogenetic hypotheses. GSI allows such quantitative estimation of the degree of exclusive ancestry of groups of interest.
 
-For more detail on GSI see: [Cummings et al. 2008. A Genealogical Approach to Quantifying Lineage Divergence. Evolution, Vol. 62, No 9. pp.2411-2422](http://onlinelibrary.wiley.com/doi/10.1111/j.1558-5646.2008.00442.x/full)
+For more detail on GSI see: [Cummings et al. 2008](http://onlinelibrary.wiley.com/doi/10.1111/j.1558-5646.2008.00442.x/full)
 
 **Input files example:**
 
