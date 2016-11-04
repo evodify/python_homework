@@ -7,7 +7,7 @@ Summarizing the variation in the phylogenetic signal along the genome is problem
 ![alt tag] (https://github.com/evodify/python_homework/blob/master/advanced_part/densitree.png)
 
 
-This image (taken from [Kryvokhyzha, 2014 (http://urn.kb.se/resolve?urn=urn:nbn:se:uu:diva-243477)) allows to make some subjective conclusions. For example, on the prevailing topology in the genome or blurred relationships between some groups.
+This image (taken from [Kryvokhyzha, 2014] (http://urn.kb.se/resolve?urn=urn:nbn:se:uu:diva-243477)) allows to make some subjective conclusions. For example, on the prevailing topology in the genome or blurred relationships between some groups.
 
 However, often researches are interested in quantitative evaluation of different phylogenetic hypotheses. GSI allows such quantitative estimation of the degree of exclusive ancestry of a groups of interest.
 
