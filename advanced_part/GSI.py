@@ -32,11 +32,14 @@ python2 GSI.py -t tree.nwk -o tree.out -g "gr1[a1,a2,a3,a4];gr2[b1,b2,b3,b4]" -c
 
 """
 
+############################# modules #############################
 
 import argparse
 import sys
 import re
 from ete2 import Tree
+import matplotlib.pyplot as plt
+import numpy as np
 
 ############################# options #############################
 
@@ -56,9 +59,18 @@ args = parser.parse_args()
 
 ############################# functions #############################
 
+def file_len(filename):
+  f = open(filename, 'r')
+  for i, l in enumerate(f):
+    pass
+  f.close()
+  return i + 1
+
 def assign_node_names(tree):
-  '''Assigns names to all internal nodes without names.
-  The string "inter_" + number are used for names.'''
+  '''
+  Assigns names to all internal nodes without names.
+  The string "inter_" + number are used for names.
+  '''
   myNodeName = 1
   for node in tree.traverse():
     if not node.name:
@@ -66,9 +78,11 @@ def assign_node_names(tree):
       myNodeName += 1
 
 def count_subtree_internal_nodes(tree, group):
-  ''' Counts internal nodes from leafs of group
-  to the most recent common ancestor (MRCA) of the group'''
-  ancestor = tree.get_common_ancestor(group).name # get MRCA name
+  '''
+  Counts internal nodes from leafs of group
+  to the most recent common ancestor (MRCA) of the group
+  '''
+  ancestor = tree.get_common_ancestor(group).name # get the MRCA name
   nodes = [ancestor] # record the fist node 
   for group_name in group:
     leaf = tree.search_nodes(name=group_name)[0] # extract a leaf from a tree
@@ -77,7 +91,7 @@ def count_subtree_internal_nodes(tree, group):
         nodes.append(a.name)
       else:
         break # break if the MRCA is reached
-  print set(nodes) # for debugging
+  #print set(nodes) # for debugging
   return int(len(set(nodes))) # count unique node names
 
 
@@ -91,11 +105,12 @@ def count_all_internal_nodes(tree):
 
 def gsi(tree, group):
   '''
-  GS = n/sum(du-2)
-  where d is the degree of node u of U total nodes uniting a group
-  (estimated coalescent events) through a most recent common ancestor
-  n is the minimum number of nodes (coalescent events)
-  required to unite a group of size n + 1 through a most recent
+  obsGS = n/sum(du-2)
+  where d is the degree of node u of U total nodes uniting a group (estimated coalescent events) through the MRCA
+  n is the minimum number of nodes (coalescent events) required to unite a group of size n + 1 through the MRCA
+  maxGS is the maximum possible GS. The maxGS is reached when a group is monophyletic.
+  minGS = n/sum(di-2)
+  where i is one of I total nodes on the tree. Thus minGS would result if all nodes on a tree were required to unite a group.
   GSI = (obsGS - minGS)/(maxGS-minGS)
   '''
   maxGS = 1.0
@@ -103,11 +118,15 @@ def gsi(tree, group):
   dGr = count_subtree_internal_nodes(tree, group)
   n = len(group) - 1
   GS = float(n)/float(dGr)
-  minGS = float(n)/float(count_all_internal_nodes(tree))
+  minGS = float(n)/float(count_all_internal_nodes(tree)) # modify this for large trees that include more leaves than specified in groups
   GSI = (GS - minGS) / (maxGS - minGS)
   return GSI
 
 ############################# analysis #############################
+
+# verify that tree and coordinates files are of the same length
+if file_len(args.tree) != file_len(args.coordinates):
+  raise IOError("%s and %s are of different length" % (args.tree, args.coordinates))
 
 treeFile = open(args.tree, 'r')
 coordinatesFile = open(args.coordinates, 'r')
@@ -116,14 +135,15 @@ groups = args.groups.split(';')
 
 counter = 0
 
-# create groups
+# create list of ID and names for each group
 groupNames = []
 indNames = []
-for g in groups:
-  groupsInd = re.split('\[|\]', g)
+GSIlists = []
+for i in range(len(groups)):
+  groupsInd = re.split('\[|\]', groups[i])
   groupNames.append(groupsInd[0])
   indNames.append(groupsInd[1].split(","))
-  # add verification: if taxon is present in a tree
+  GSIlists.append([]) # make lists to store GSI values for a histogram
 #print groupNames # for debugging 
 #print indNames # for debugging 
 
@@ -133,31 +153,24 @@ outputFile.write("TreeName\t%s\n" % ('\t'.join(str(e) for e in groupNames)))
 for tree, treeName in zip(treeFile,coordinatesFile):
   t = Tree(tree)
 
+  # verify that all names are present in a tree
+  indNamesflat = [i for y in indNames for i in y]
+  for indName in indNamesflat:
+    if indName not in tree:
+      raise ValueError("%s is not present in the tree %s" % (indName, tree))
+
+
   # add names to internal nodes for convenience of codding and debugging.
   assign_node_names(t)
-  
-  # for debugging 
-  print t.get_ascii(show_internal=True) 
-
-
-  ############################# can remove #######################################
-  # check monophyly
-  # amono = t.check_monophyly(values=["a1", "a2", "a3", "a4"], target_attr="name")
-  # bmono = t.check_monophyly(values=["b1", "b2", "b3", "b4"], target_attr="name")
-  # print bmono
-
-  # # count internal nodes
-  # dGr1 = count_subtree_internal_nodes(t, gr1) # for debugging 
-  # dGr2 = count_subtree_internal_nodes(t, gr2) # for debugging 
-  # # print "Number of internal nodes = ", dGr1, "&", dGr2 # for debugging 
-  ################################################################################
-
+  #print t.get_ascii(show_internal=True)  # for debugging 
+ 
   # calculate GSI
   GSIvalues = []
   for i in range(len(groupNames)):
     GSIind = gsi(t, indNames[i])
     GSIvalues.append(GSIind)
-  
+    GSIlists[i].append(float(GSIind))
+
   # write output
   treeNameP = treeName.rstrip() # remove \n from a string
   GSIvaluesP = '\t'.join(str(e) for e in GSIvalues)
@@ -165,8 +178,21 @@ for tree, treeName in zip(treeFile,coordinatesFile):
 
   # track the progress:
   counter += 1
-  if counter % 1000 == 0:
+  if counter % 100 == 0:
     print str(counter), "trees processed"
+
+############################# visualize #############################
+
+#print GSIlists # for debugging
+
+plt.hist(GSIlists, label=groupNames)
+plt.xlim(0,1)
+plt.xticks(np.arange(0,1.1,0.1))
+plt.legend(loc = 0)
+plt.title("GSI distribution", size = 20)
+plt.xlabel("GSI")
+plt.ylabel("Frequency")
+plt.savefig(args.output +".pdf", dpi=90)
 
 treeFile.close()
 coordinatesFile.close()
