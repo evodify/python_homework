@@ -1,6 +1,6 @@
 # GSI calculation
 
-This script calculates genealogical sorting index (GSI) for a given list of tree leaves in multi-newick file. It iterates through all the trees in a file and outputs GSIs for each tree as well as summarize the results with a histogram.
+This script calculates genealogical sorting index (GSI) for a given group/groups on trees in the multi-newick file. It iterates through all the trees in a file and outputs GSIs for each tree as well as it summarizes the results with a histogram.
 
 Summarizing the variation in the phylogenetic signal along the genome is problematic due to  large set of trees with varying topology. Often the results of phylogenetic sliding window analysis is visualized with [DensiTree](https://www.cs.auckland.ac.nz/~remco/DensiTree/) :
 
