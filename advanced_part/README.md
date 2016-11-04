@@ -2,17 +2,18 @@
 
 This script calculates genealogical sorting index (GSI) for a given list of tree leaves in multi-newick file. It iterates through all the trees in a file and outputs GSIs for each tree as well as summarize the results with a histogram.
 
-Summarizing the variation in the phylogenetic signal along the genome is problematic due to  large set of trees with varying topology. Often the results of phylogenetic sliding window analysis is visualized with DensiTree:
+Summarizing the variation in the phylogenetic signal along the genome is problematic due to  large set of trees with varying topology. Often the results of phylogenetic sliding window analysis is visualized with [DensiTree](https://www.cs.auckland.ac.nz/~remco/DensiTree/) :
 
-![alt tag] (https://github.com/evodify/genome-phasing/blob/master/chimericBlocks.png)
+![alt tag] (https://github.com/evodify/python_homework/blob/master/advanced_part/densitree.png)
 
-This image allows to make some conclusion on the prevailing topology in the genome.
+
+This image (taken from [Kryvokhyzha, 2014 (http://urn.kb.se/resolve?urn=urn:nbn:se:uu:diva-243477)) allows to make some subjective conclusions. For example, on the prevailing topology in the genome or blurred relationships between some groups.
 
 However, often researches are interested in quantitative evaluation of different phylogenetic hypotheses. GSI allows such quantitative estimation of the degree of exclusive ancestry of a groups of interest.
 
 For more detail on GSI see: Cummings et al. 2008. A Genealogical Approach to Quantifying Lineage Divergence. Evolution, Vol. 62, No 9. pp.2411-2422
 
-**Input file examples:**
+**Input files example:**
 
 Phylogenetic trees in a multi-newick file (tree.nwk):
 ```
@@ -28,7 +29,7 @@ tree2
 tree3
 ```
 
-**Output file examples:**
+**Output files example:**
 
 GSI for every tree and group (tree.out):
 ```
@@ -38,7 +39,9 @@ tree2   1.0 1.0
 tree3   0.5625  0.125
 ```
 Distribution of GSI (tree.out.pdf):
-![alt tag] (https://github.com/evodify/genome-phasing/blob/master/chimericBlocks.png)
+
+
+![alt tag] (https://github.com/evodify/python_homework/blob/master/advanced_part/tree.out.png)
 
 **Command example:**
 ```
