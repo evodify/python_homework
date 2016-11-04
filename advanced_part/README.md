@@ -1,0 +1,54 @@
+# GSI calculation
+
+This script calculates genealogical sorting index (GSI) for a given list of tree leaves in multi-newick file. It iterates through all the trees in a file and outputs GSIs for each tree as well as summarize the results with a histogram.
+
+Summarizing the variation in the phylogenetic signal along the genome is problematic due to  large set of trees with varying topology. Often the results of phylogenetic sliding window analysis is visualized with DensiTree:
+
+![alt tag] (https://github.com/evodify/genome-phasing/blob/master/chimericBlocks.png)
+
+This image allows to make some conclusion on the prevailing topology in the genome.
+
+However, often researches are interested in quantitative evaluation of different phylogenetic hypotheses. GSI allows such quantitative estimation of the degree of exclusive ancestry of a groups of interest.
+
+For more detail on GSI see: Cummings et al. 2008. A Genealogical Approach to Quantifying Lineage Divergence. Evolution, Vol. 62, No 9. pp.2411-2422
+
+**Input file examples:**
+
+Phylogenetic trees in a multi-newick file (tree.nwk):
+```
+((((a1,a2),(a3,a4)),((b1,b2),b3)),b4);
+(((a1,a2),(a3,a4)),((b1,b2),(b3,b4)));
+((((a1,a2),(b3,a4)),a3),((b1,b2),b4));
+```
+
+Tree names/coordinates on the genome (tree.names):
+```
+tree1
+tree2
+tree3
+```
+
+**Output file examples:**
+
+GSI for every tree and group (tree.out):
+```
+TreeName    gr1 gr2
+tree1   1.0 0.5625
+tree2   1.0 1.0
+tree3   0.5625  0.125
+```
+Distribution of GSI (tree.out.pdf):
+![alt tag] (https://github.com/evodify/genome-phasing/blob/master/chimericBlocks.png)
+
+**Command example:**
+```
+python2 GSI.py -t tree.nwk -o tree.out -g "gr1[a1,a2,a3,a4];gr2[b1,b2,b3,b4]" -c tree.names
+```
+
+To see all possible option, run python script with --help option: `python script.py --help`
+
+
+# Future options:
+1. Impelement filter by bootstrap values: (ete2: TreeNode.support)
+2. Resolve polytomies (ete2: resolve_polytomy)
+3. Set root on fly (ete2: TreeNode.set_outgroup)
